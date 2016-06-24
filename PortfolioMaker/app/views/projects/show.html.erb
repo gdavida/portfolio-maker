@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @project.title %>
+</p>
+
+<p>
+  <strong>Brief:</strong>
+  <%= @project.brief %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @project.description %>
+</p>
+
+<p>
+  <strong>Github repo:</strong>
+  <%= @project.github_repo %>
+</p>
+
+<p>
+  <strong>Demo site url:</strong>
+  <%= @project.demo_site_url %>
+</p>
+
+<p>
+  <strong>Languages used:</strong>
+  <%= @project.languages_used %>
+</p>
+
+<p>
+  <strong>Other features:</strong>
+  <%= @project.other_features %>
+</p>
+
+<p>
+  <strong>Project image url:</strong>
+  <%= @project.project_image_url %>
+</p>
+
+<%= link_to 'Edit', edit_project_path(@project) %> |
+<%= link_to 'Back', projects_path %>
