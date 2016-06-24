@@ -1,9 +1,9 @@
 class CreateProjects < ActiveRecord::Migration
   def change
     create_table :projects do |t|
-      t.string :title
+      t.string :title, null: false
       t.string :brief
-      t.text :description
+      t.text :description, null: false
       t.string :github_repo
       t.string :demo_site_url
       t.text :languages_used
