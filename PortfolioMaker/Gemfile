@@ -25,6 +25,10 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # https://github.com/twbs/bootstrap-rubygem
 gem 'bootstrap', '~> 4.0.0.alpha3'
 
+# https://github.com/NoamB/sorcery/wiki/Simple-Password-Authentication
+# Gemfile
+gem 'sorcery'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<script src="https://use.fontawesome.com/4e2899de1b.js"></script>
   <title>PortfolioMaker</title>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
@@ -8,7 +9,11 @@
 </head>
 <body>
 
-<%= yield %>
+
+	<div class="container">
+		<%= yield %>
+	</div>
+
 
 </body>
 </html>
