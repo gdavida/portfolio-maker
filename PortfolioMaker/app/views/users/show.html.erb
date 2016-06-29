@@ -27,17 +27,7 @@
 
 <p>
   <strong>Profile image:</strong>
-  <%= @user.profile_image %>
-</p>
-
-<p>
-  <strong>Crypted password:</strong>
-  <%= @user.crypted_password %>
-</p>
-
-<p>
-  <strong>Salt:</strong>
-  <%= @user.salt %>
+  <img src="<%= @user.profile_image %>" class="profile-image">
 </p>
 
 <%= link_to 'Edit', edit_user_path(@user) %> |

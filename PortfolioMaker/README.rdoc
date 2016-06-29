@@ -1,28 +1,154 @@
 == README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+- rails new TLLrails -d postgresql
 
-Things you may want to cover:
+- initial commit and remote add to respository
+ 
+- gco -b setup
+  - gems:
+    - remove coffeescript
+    - add sorcery!, follow directions here:
+    	https://github.com/NoamB/sorcery/wiki/Simple-Password-Authentication
+    - add bootstrap, follow diections here:
+    	https://github.com/twbs/bootstrap-rubygem
 
-* Ruby version
+			- rake db:create
 
-* System dependencies
+    	-	rails g sorcery:install (creates model and migration)
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+			- check the migration is how you want then:
+				- rake db:migrate
 
 
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+			- rails generate controller users new show index create
+
+			- add strong params in user controller:
+				  def user_params
+						params.require(:user).permit(:name, :email, :password, :password_confirmation)
+  				end
+
+  		- add validations to user model:
+  			### app/models/user.rb
+				class User < ActiveRecord::Base
+				  authenticates_with_sorcery!
+
+				  validates :password, length: { minimum: 3 }, if: -> { new_record? || changes[:crypted_password] }
+				  validates :password, confirmation: true, if: -> { new_record? || changes[:crypted_password] }
+				  validates :password_confirmation, presence: true, if: -> { new_record? || changes[:crypted_password] }
+
+				  validates :email, uniqueness: true
+				end
+			- add routes to controller
+
+			- create new form for User
+			 -- run it and test to see if works
+
+			- setup so that users can log in:
+				- rails g controller sessions login
+				- routes for sessions
+					resources :sessions, only [:new, :create, :destroy]
+					get 'login' => 'sessions#new', :as => :login
+					post 'logout' => 'sessions#destroy', :as => :logout
+				- add root : 
+					- root :to => 'users#index'
+				- add to application.html.erb:
+					- <div id="nav">
+					    <% if current_user %>
+					      <p>Logged in as <%= current_user.email %> </p>
+					      <%= link_to "Logout", :logout, method: :post %>
+					    <% else %>
+					    	<p>Not Logged In</p>
+					      <%= link_to "Register", new_user_path %> |
+					      <%= link_to "Login", :login %>
+					    <% end %>
+					  </div>
+				- create form for user/new
+						<%= form_for @user do |f| %>
+							<% if f.object.errors.any?%>
+							  <div class="col xs12 s12">
+							    <% f.object.errors.full_messages.each do |x|%>
+							      <p>Error: <%= x %></p>
+							      <p>User was not saved </p>
+							    <% end %>
+							  </div>
+							<% end %>
+
+						  <div>
+						    <%= f.label :email %><br />
+						    <%= f.text_field :email %>
+						  </div>
+
+
+							<div>
+							   <%= f.label :password %><br />
+							   <%= f.password_field :password %>
+							</div>
+
+							<div>
+							   <%= f.label :password_confirmation %><br />
+							   <%= f.password_field :password_confirmation %>
+							</div>
+
+							<div>
+								<%= f.submit %>
+							</div>
+
+						<% end %>
+				- create form for login session/new.html.erb:
+						<%= form_tag sessions_path, :method => :post do %>
+					  <div class="field">
+					    <%= label_tag :email %><br />
+					    <%= text_field_tag :email %>
+					  </div>
+					  <div class="field">
+					    <%= label_tag :password %><br />
+					    <%= password_field_tag :password %>
+					  </div>
+					  <div class="actions">
+					    <%= submit_tag "Login" %>
+					  </div>
+					<% end %>
+				- add
+
+
+
+
+-------------------------------
+##CONTROLLER TESTS
+1. Add these lines to your `test_helper.rb`:
+
+```class ActiveSupport::TestCase
+  # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
+  fixtures :all
+
+  # Add more helper methods to be used by all tests here...
+end
+
+class ActionController::TestCase
+  include Sorcery::TestHelpers::Rails::Integration
+  include Sorcery::TestHelpers::Rails::Controller
+end
+```
+
+This lets you use the Sorcery test-helpers for controller and integration tests.
+
+2. In tests where logging in is necessary, do something like this:
+
+```@user = users(:default_user)
+login_user(user=@user, route=login_path)
+```
+
+This assumes that in `test/fixtures/users.yml` you've defined a `default_user` fixture, but you can easily replace that top line with something like this:
+
+```@user = User.create!(email: "andrew@andrew.com", password: "andrew", password_confirmation: "andrew")
+```
+
+If you want to define a fixture, it should look sort of like the fixture here: https://github.com/NoamB/sorcery/wiki/Testing-Rails (the very top item), though you might not need an 'activation_state'.
+
+Here's the fixture I've used:
+
+```# test/fixtures/users.yml
+default_user: 
+  email: "default_user@example.com"
+  salt: <%= salt = "asdasdastr4325234324sdfds" %>
+  crypted_password: <%= Sorcery::CryptoProviders::BCrypt.encrypt("secret", salt) %>
